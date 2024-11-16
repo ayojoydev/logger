@@ -27,7 +27,10 @@ class AccessControl:
 
         if action in self.permissions:
             self.permissions[action] = value
-            print(f"Permission '{action}' changed to {value} for user {self
+            print(f"Модификатор доступа '{action}' изменен на {value} для пользователя {self.user}.")
+        else:
+            print(f"Неверный типа модификатора доступа: {action}. Доступные модификаторы доступа: {list(self.permissions.keys())}.")
+
 
 class SecureResource(Logger, AccessControl):
     def __init__(self, user, resource_name):
