@@ -15,20 +15,24 @@ class Logger:
         time = datetime.now().strftime("%H:%M:%S")
         print(f"LOG from {time}: {message}")
 
-class AccsessControl:
+class AccessControl:
     def __init__(self, user):
         self.user = user
         self.permissions = {"read": True, "write": False}
 
-
     def has_permission(self, action):
         return self.permissions.get(action, False)
 
+    def change_permission(self, action, value):
 
-class SecureResource(Logger, AccsessControl):
+        if action in self.permissions:
+            self.permissions[action] = value
+            print(f"Permission '{action}' changed to {value} for user {self
+
+class SecureResource(Logger, AccessControl):
     def __init__(self, user, resource_name):
         Logger.__init__(self)
-        AccsessControl.__init__(self, user)
+        AccessControl.__init__(self, user)
         self.resource_name = resource_name
 
     def read(self):
