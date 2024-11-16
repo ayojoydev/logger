@@ -11,9 +11,10 @@ class Logger:
         self.logs = []
 
     def log(self, message):
-        self.logs.append(message)
         time = datetime.now().strftime("%H:%M:%S")
-        print(f"LOG from {time}: {message}")
+        self.logs.append(f"LOG from {time} " + message)
+
+
 
 class AccessControl:
     def __init__(self, user):
@@ -23,7 +24,7 @@ class AccessControl:
     def has_permission(self, action):
         return self.permissions.get(action, False)
 
-    def change_permission(self, action, value):
+    def change_permission(self, action, value=bool()):
 
         if action in self.permissions:
             self.permissions[action] = value
@@ -41,7 +42,7 @@ class SecureResource(Logger, AccessControl):
     def read(self):
         if self.has_permission("read"):
             self.log(f"{self.user} прочитал ресурс {self.resource_name}.")
-            print(f"Чтение рпесурса {self.resource_name}")
+            print(f"Чтение ресурса {self.resource_name}")
         else:
             self.log(f"{self.user} попытался прочитал ресурс {self.resource_name}.")
             print(f"ошибка доступа к ресурсу {self.resource_name}")
@@ -57,6 +58,8 @@ class SecureResource(Logger, AccessControl):
 
 resource = SecureResource(user="Alice", resource_name="pharmacyDataBase")
 resource.read()
+resource.write("Paracetomol")
+resource.change_permission("write", True)
 resource.write("Paracetomol")
 
 for log in resource.logs:
