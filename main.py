@@ -9,12 +9,18 @@ from datetime import datetime
 class Logger:
     def __init__(self):
         self.logs = []
+        self.time = datetime.now().strftime("%H:%M:%S")
+        self.date = datetime.now().strftime("%Y-%m-%d")
 
     def log(self, message):
-        time = datetime.now().strftime("%H:%M:%S")
-        self.logs.append(f"LOG from {time} " + message)
+        log = f"{self.time} " + message
+        self.logs.append(log)
+        self.__write_to_file(log)
 
-
+    def __write_to_file(self, data):
+        name = f"{self.date}.log"
+        with open(name, "a", encoding="utf-8") as file:
+            file.write(data + "\n")
 
 class AccessControl:
     def __init__(self, user):
@@ -29,10 +35,9 @@ class AccessControl:
         if action in self.permissions:
             self.permissions[action] = value
             print(f"Модификатор доступа '{action}' изменен на {value} для пользователя {self.user}.")
+            self.log(f"Модификатор доступа '{action}' изменен на {value} для пользователя {self.user}.")
         else:
             print(f"Неверный типа модификатора доступа: {action}. Доступные модификаторы доступа: {list(self.permissions.keys())}.")
-
-
 class SecureResource(Logger, AccessControl):
     def __init__(self, user, resource_name):
         Logger.__init__(self)
@@ -61,6 +66,3 @@ resource.read()
 resource.write("Paracetomol")
 resource.change_permission("write", True)
 resource.write("Paracetomol")
-
-for log in resource.logs:
-    print(log)
