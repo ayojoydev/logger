@@ -3,22 +3,23 @@
 Логирование помогает разработчикам и системным администраторам отслеживать выполнение программы, находить ошибки,
 диагностировать проблемы, а также понимать, как программа работает в различных условиях.
 '''
-
 from datetime import datetime
 import exceptions as exc
+
+#ERROR INFO
 class Logger:
     def __init__(self):
         self.logs = []
         self.time = datetime.now().strftime("%H:%M:%S")
         self.date = datetime.now().strftime("%Y-%m-%d")
 
-    def log(self, message):
-        log = f"{self.time} " + message
+    def log(self, message, level="INFO"):
+        log = f"{self.time} [{level}] {message}"
         self.logs.append(log)
-        self.__write_to_file(log)
+        self.__write_to_file(log, level)
 
-    def __write_to_file(self, data):
-        name = f"{self.date}.log"
+    def __write_to_file(self, data, level="INFO"):
+        name = f"{level.lower()}_{self.date}.log"
         with open(name, "a", encoding="utf-8") as file:
             file.write(data + "\n")
 
@@ -37,10 +38,10 @@ class AccessControl:
                 print(f"Модификатор доступа '{action}' изменен на {value} для пользователя {self.user}.")
                 self.log(f"Модификатор доступа '{action}' изменен на {value} для пользователя {self.user}.")
             else:
-                raise exc.InvalidPermissionException(action)
-        except exc.InvalidPermissionException as e:
-            self.log(str(e))
+                raise exc.InvalidPermissionExceoption(action)
+        except exc.InvalidPermissionExceoption as e:
             print(e)
+            self.log(str(e), level="ERROR")
 class SecureResource(Logger, AccessControl):
     def __init__(self, user, resource_name):
         Logger.__init__(self)
@@ -55,7 +56,7 @@ class SecureResource(Logger, AccessControl):
             else:
                 raise exc.PermissionDeniedException("read", self.user, self.resource_name)
         except exc.PermissionDeniedException as e:
-            self.log(str(e))
+            self.log(str(e), level="ERROR")
             print(e)
 
     def write(self, data):
@@ -66,9 +67,8 @@ class SecureResource(Logger, AccessControl):
             else:
                 raise exc.PermissionDeniedException("write", self.user, self.resource_name)
         except exc.PermissionDeniedException as e:
-            self.log(str(e))
+            self.log(str(e), level="ERROR")
             print(e)
-
 
 resource = SecureResource(user="Alice", resource_name="pharmacyDataBase")
 resource.change_permission("read", False)
